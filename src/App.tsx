@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import "./App.css";
 import { Camera } from "./Camera";
+import CameraV2 from "./CameraV2";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -9,7 +10,8 @@ function App() {
   return (
     <>
       <div>
-        <Camera></Camera>
+        {/* <Camera></Camera> */}
+        <CameraV2></CameraV2>
       </div>
     </>
   );
