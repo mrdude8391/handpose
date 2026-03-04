@@ -11,6 +11,7 @@ function App() {
     <>
       <div>
         {/* <Camera></Camera> */}
+        <canvas></canvas>
         <CameraV2></CameraV2>
       </div>
     </>

@@ -7,17 +7,6 @@ import type { MediaPipeHandsMediaPipeModelConfig } from "@tensorflow-models/hand
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
 
-// const createDetector = async () => {
-//     const model: handPoseDetection.SupportedModels =
-//         handPoseDetection.SupportedModels.MediaPipeHands;
-//     const detectorConfig: MediaPipeHandsMediaPipeModelConfig = {
-//         runtime: "mediapipe", // or 'tfjs',
-//         solutionPath: "node_modules/@mediapipe/hands", // in npm | non npm -> 'https://cdn.jsdelivr.net/npm/@mediapipe/hands'
-//         modelType: "full",
-//     };
-//     return handPoseDetection.createDetector(model, detectorConfig);
-// };
-
 // 1. Create Detector
 // 2. Run Inference
 
