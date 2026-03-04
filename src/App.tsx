@@ -3,6 +3,7 @@ import { useState } from "react";
 import "./App.css";
 import { Camera } from "./Camera";
 import CameraV2 from "./CameraV2";
+import Canvas from "./Canvas";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -11,7 +12,6 @@ function App() {
     <>
       <div>
         {/* <Camera></Camera> */}
-        <canvas></canvas>
         <CameraV2></CameraV2>
       </div>
     </>

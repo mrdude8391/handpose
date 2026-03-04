@@ -6,17 +6,18 @@ import "@mediapipe/hands";
 import type { MediaPipeHandsMediaPipeModelConfig } from "@tensorflow-models/hand-pose-detection";
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
-
+import { plotter } from "../Plotter";
 // 1. Create Detector
 // 2. Run Inference
 
 // Module-level singleton — survives Strict Mode's remount cycle
 let detectorPromise: Promise<handPoseDetection.HandDetector> | null = null;
-
+let webcam: Webcam | null = null
+let canvas: HTMLCanvasElement | null = null
 
 export const createDetector = () => {
 
-    console.log("create detector")
+
     if (!detectorPromise) {
 
         const model = handPoseDetection.SupportedModels.MediaPipeHands;
@@ -28,33 +29,69 @@ export const createDetector = () => {
         };
         detectorPromise = handPoseDetection.createDetector(model, detectorConfig);
     }
+    console.log("Detector created")
     return detectorPromise;
 };
 
+const disposeDetector = () => {
+
+    if (detectorPromise) {
+        detectorPromise?.then((detector) => {
+            detector.dispose();
+        })
+        detectorPromise = null
+        console.log("Detector disposed")
+    }
+    return
+}
+
+const setElementSize = () => {
+    if (webcam && canvas && webcam.video) {
+        const videoWidth = webcam.video.videoWidth
+        const videoHeight = webcam.video.videoHeight
+
+        webcam.video.width = videoWidth
+        webcam.video.height = videoHeight
+
+        canvas.width = videoWidth
+        canvas.height = videoHeight
+    }
+
+}
 
 
-export const detect = async (webcamRef: RefObject<Webcam | null>) => {
+
+export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: boolean, canvasRef: RefObject<HTMLCanvasElement | null>) => {
+    webcam = webcamRef.current
+    canvas = canvasRef.current
+
+    if (!isDetecting) { disposeDetector(); return }
     await createDetector()
 
     const renderResults = async () => {
-        let hands
 
+        let hands: handPoseDetection.Hand[]
         if (
             detectorPromise &&
-            webcamRef.current &&
-            webcamRef.current.video !== null &&
-            webcamRef.current.video.readyState === 4
+            webcam &&
+            canvas &&
+            webcam.video !== null &&
+            webcam.video.readyState === 4
         ) {
-            const video = webcamRef.current.video as HTMLVideoElement
+
+            setElementSize()
+            const video = webcam.video as HTMLVideoElement
             const detector = await detectorPromise
             hands = await detector.estimateHands(video)
-            console.log(hands)
-            // requestAnimationFrame(renderResults);
+
+            plotter(hands, canvasRef)
+            requestAnimationFrame(renderResults);
         }
 
     }
 
-    setInterval(() => { renderResults() }, 1000)
+    // setInterval(() => { renderResults() }, 1000)
+    setTimeout(() => { renderResults() }, 1000)
 
 
 
