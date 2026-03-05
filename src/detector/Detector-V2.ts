@@ -89,6 +89,7 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
 
             hands.forEach((hand) => {
                 drawHand(hand)
+                estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
             })
             // plotter(hands)
 

@@ -8,9 +8,9 @@ const GE = new fp.GestureEstimator([
 ]);
 
 
-
-export const estimateGestures = (keypoints: Keypoint) => {
+export const estimateGestures = (keypoints3D: Keypoint[]) => {
     // using a minimum match score of 8.5 (out of 10)
-    const estimatedGestures = GE.estimate(keypoints, 8.5);
-    return estimatedGestures
+    const estimatedGestures = GE.estimate(keypoints3D, 8.5);
+    console.log(estimatedGestures)
 }
+
