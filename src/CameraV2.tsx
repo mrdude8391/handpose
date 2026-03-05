@@ -11,7 +11,7 @@ const CameraV2 = () => {
   detect(webcamRef, isDetecting, canvasRef);
 
   return (
-    <div>
+    <div className="camera">
       <button onClick={() => setIsDetecting(!isDetecting)}>
         {isDetecting ? "Stop" : "Start"}
       </button>

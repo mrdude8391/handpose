@@ -10,10 +10,8 @@ function App() {
 
   return (
     <>
-      <div>
-        {/* <Camera></Camera> */}
-        <CameraV2></CameraV2>
-      </div>
+      {/* <Camera></Camera> */}
+      <CameraV2></CameraV2>
     </>
   );
 }

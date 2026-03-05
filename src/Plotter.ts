@@ -2,6 +2,7 @@ import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import type { RefObject } from "react";
 
 let canvas: HTMLCanvasElement | null = null
+let ctx: CanvasRenderingContext2D | null = null
 
 interface fingerLookupIndices {
     [key: string]: number[]
@@ -26,7 +27,11 @@ const connections = [
 ];
 
 export const initializeCanvas = (canvasRef: RefObject<HTMLCanvasElement | null>) => {
-    if (!canvas && canvasRef.current) canvas = canvasRef.current // assign canvas if null
+    if (!canvas && canvasRef.current) {
+        canvas = canvasRef.current
+        ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+
+    } // assign canvas if null
 }
 
 export const plotter = (hands: handPoseDetection.Hand[]) => {
@@ -102,46 +107,48 @@ export const plotter = (hands: handPoseDetection.Hand[]) => {
     }
 }
 
-export const plot = (hand: handPoseDetection.Hand) => {
-    if (hand && canvas) {
-        const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+export const drawHand = (hand: handPoseDetection.Hand) => {
+    if (hand && canvas && ctx) {
         ctx.strokeStyle = 'White';
         ctx.lineWidth = 1;
+        const drawFinger = (points: handPoseDetection.Keypoint[], finger: number) => {
 
-        const drawHand = (points: handPoseDetection.Keypoint[], finger: number) => {
             // set up region for paths
             const region = new Path2D();
             region.moveTo(points[0].x, points[0].y);
-
+            // index start at 1 and ignore drawing point 0 multiple times
             for (let i = 1; i < points.length; i++) {
                 const point = points[i];
                 // draw point
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
-                ctx.fillStyle = fingerColorIndex[finger]
-                ctx.fill();
+                ctx!.beginPath();
+                ctx!.arc(point.x, point.y, 4, 0, 2 * Math.PI)
+                ctx!.fillStyle = fingerColorIndex[finger]
+                ctx!.fill();
 
                 // map line path
                 region.lineTo(point.x, point.y);
             }
             // stroke the region lines
-            ctx.stroke(region);
+            ctx!.stroke(region);
         }
-        // we have hand object 
-        // loop all keypoints 
-        hand.keypoints.forEach((keypoints) => {
-            for (let i = 0; i < hand.keypoints.length; i++) {
+        // go through all the fingers one at a time to draw the lines for each finger
+        // array of fingers
+        const fingers = Object.keys(fingerLookupIndices);
+        // loop through all the fingers
+        for (let i = 0; i < fingers.length; i++) {
+            const finger = fingers[i]; // current finger i.e. thumb
+            const points = fingerLookupIndices[finger].map(idx => hand.keypoints[idx]); // using the index, enter the thumb key. get all the indexes for thumb.
+            // using the index of each thumb keypoint. get all the keypoints from hand object.
+            // draw the finger using all the points, and pass the index of the finger. ie thumb is 0
+            drawFinger(points, i)
+        }
 
-                const fingers = Object.keys(fingerLookupIndices);
-                for (let j = 0; j < fingers.length; j++) {
-                    const finger = fingers[j];
-                    const points = fingerLookupIndices[finger].map(idx => hand.keypoints[idx]);
-                    drawHand(points, j)
-                }
-            }
-        })
-
-
-
+        // exception draw wrist point 0 on its own
+        const wrist = hand.keypoints[0]
+        // draw point
+        ctx.beginPath();
+        ctx.arc(wrist.x, wrist.y, 4, 0, 2 * Math.PI)
+        ctx.fillStyle = 'yellow'
+        ctx.fill();
     }
 }
