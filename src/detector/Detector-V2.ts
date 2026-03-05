@@ -83,13 +83,15 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
             setElementSize()
             const video = webcam.video as HTMLVideoElement
             const detector = await detectorPromise
-            hands = await detector.estimateHands(video) // array of hands
+            hands = await detector.estimateHands(video, { flipHorizontal: false }) // array of hands
 
             initializeCanvas(canvasRef)
 
             hands.forEach((hand) => {
                 drawHand(hand)
-                estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
+                const gesture = estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
+                const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
+                console.log({ hand: handedness, gesture: gesture.name })
             })
             // plotter(hands)
 
