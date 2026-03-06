@@ -1,3 +1,4 @@
+import type { HandGesture } from './../fingerpose/Fingerpose';
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs-core";
 // Register WebGL backend.
@@ -7,7 +8,7 @@ import type { MediaPipeHandsMediaPipeModelConfig } from "@tensorflow-models/hand
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
 import { drawHand, initializeCanvas, plotter } from "../Plotter";
-import { estimateGestures } from "../fingerpose/fingerpose";
+import { estimateGestures } from "../fingerpose/Fingerpose";
 // 1. Create Detector
 // 2. Run Inference
 
@@ -17,10 +18,7 @@ let webcam: Webcam | null = null
 let canvas: HTMLCanvasElement | null = null
 
 export const createDetector = () => {
-
-
     if (!detectorPromise) {
-
         const model = handPoseDetection.SupportedModels.MediaPipeHands;
         const detectorConfig: MediaPipeHandsMediaPipeModelConfig = {
             runtime: "mediapipe",
@@ -29,13 +27,12 @@ export const createDetector = () => {
             maxHands: 4
         };
         detectorPromise = handPoseDetection.createDetector(model, detectorConfig);
+        console.log("Detector created")
     }
-    console.log("Detector created")
     return detectorPromise;
 };
 
 const disposeDetector = () => {
-
     if (detectorPromise) {
         detectorPromise?.then((detector) => {
             detector.dispose();
@@ -62,7 +59,8 @@ const setElementSize = () => {
 
 
 
-export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: boolean, canvasRef: RefObject<HTMLCanvasElement | null>) => {
+export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: boolean, canvasRef: RefObject<HTMLCanvasElement | null>, handleChangeHandGesture: (handGestures: HandGesture[]) => void) => {
+    console.log("detect")
     webcam = webcamRef.current
     canvas = canvasRef.current
 
@@ -87,14 +85,19 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
 
             initializeCanvas(canvasRef)
 
+            let handGestures: HandGesture[] = []
+
             hands.forEach((hand) => {
                 drawHand(hand)
-                const gesture = estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
+                const estimatedGesture = estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
                 const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
-                console.log({ hand: handedness, gesture: gesture.name })
+                const handGesture = { hand: handedness, gesture: estimatedGesture.name }
+                handGestures.push(handGesture)
+                console.log(handGesture)
             })
             // plotter(hands)
 
+            handleChangeHandGesture(handGestures)
             // if (hands.length > 0) console.log(hands)
             requestAnimationFrame(renderResults);
         }

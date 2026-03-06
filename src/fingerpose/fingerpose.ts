@@ -1,13 +1,18 @@
 import * as fp from "fingerpose";
 import type { Keypoint } from "@tensorflow-models/hand-pose-detection";
+import dogDescription from "./gestures/Dog";
 
 // add "✌🏻" and "👍" as sample gestures
 const GE = new fp.GestureEstimator([
     fp.Gestures.VictoryGesture,
-    fp.Gestures.ThumbsUpGesture
+    fp.Gestures.ThumbsUpGesture,
+    dogDescription
 ]);
 
-
+export interface HandGesture {
+    hand: string,
+    gesture: string
+}
 
 export const estimateGestures = (keypoints3D: Keypoint[]) => {
     // using a minimum match score of 8.5 (out of 10)
