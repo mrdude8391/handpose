@@ -19,7 +19,7 @@ export const estimateGestures = (keypoints3D: Keypoint[]) => {
     // originally the fingerpose library from npm is using outdated handpose library whichcan only detect one hand.
     // new updtaed fingerpose library is only available on github and supports multiple hands and uses the 3d keypoints
 
-    // console.log(estimatedGestures)
+    console.log(estimatedGestures)
     if (estimatedGestures.gestures.length > 0) {
         let result = estimatedGestures.gestures.reduce((p, c) => {
             return (p.score > c.score) ? p : c

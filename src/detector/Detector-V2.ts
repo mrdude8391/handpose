@@ -7,7 +7,7 @@ import type { MediaPipeHandsMediaPipeModelConfig } from "@tensorflow-models/hand
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
 import { drawHand, initializeCanvas, plotter } from "../Plotter";
-import { estimateGestures } from "../fingerpose";
+import { estimateGestures } from "../fingerpose/fingerpose";
 // 1. Create Detector
 // 2. Run Inference
 
@@ -95,7 +95,7 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
             })
             // plotter(hands)
 
-            if (hands.length > 0) console.log(hands)
+            // if (hands.length > 0) console.log(hands)
             requestAnimationFrame(renderResults);
         }
 
