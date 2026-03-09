@@ -13,7 +13,7 @@ const CameraV2 = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const handleChangeHandGestures = (newHandGestures: HandGesture[]) => {
-    if (handGestures != newHandGestures) {
+    if (newHandGestures.length > 0) {
       setHandGestures(newHandGestures);
       console.log(handGestures);
     }
