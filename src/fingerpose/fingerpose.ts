@@ -17,6 +17,7 @@ export interface HandGesture {
 export const estimateGestures = (keypoints3D: Keypoint[]) => {
     // using a minimum match score of 8.5 (out of 10)
     const estimatedGestures = GE.estimate(keypoints3D, 8.5);
+    console.log('est', estimatedGestures)
     let result = {
         name: '',
         score: 0
@@ -26,7 +27,7 @@ export const estimateGestures = (keypoints3D: Keypoint[]) => {
 
     // console.log(estimatedGestures)
     if (estimatedGestures.gestures.length > 0) {
-        let result = estimatedGestures.gestures.reduce((p, c) => {
+        result = estimatedGestures.gestures.reduce((p, c) => {
             return (p.score > c.score) ? p : c
         })
         return result
