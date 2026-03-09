@@ -58,38 +58,37 @@ const setElementSize = () => {
 }
 
 const history_left: string[] = [];
+const counts_left: Record<string, number> = {};
+
 const history_right: string[] = [];
 
 const WINDOW_SIZE = 10;
 
 const smoothPrediction = (prediction: string, handedness: string) => {
-    let currentHistory: string[] = [];
     // add the prediction to the history
     if (handedness === 'left') {
         history_left.push(prediction)
+        counts_left[prediction] = (counts_left[prediction] || 0) + 1;
         // shift array keep the history within the window size
         if (history_left.length > WINDOW_SIZE) {
-            history_left.shift()
+            const oldest = history_left.shift()
+            if (oldest) {
+                counts_left[oldest] -= 1;
+            }
         }
-        currentHistory = history_left
     } else {
         history_right.push(prediction)
         // shift array keep the history within the window size
         if (history_right.length > WINDOW_SIZE) {
             history_right.shift()
         }
-        currentHistory = history_right
     }
-
-
     // find most common gesture
     const counts: Record<string, number> = {}; // Using an object as a hash map
     let maxCount = 0
     let mostFrequent = ''
 
-    for (const gesture of currentHistory) {
-
-
+    for (const gesture of history_left) {
         if (gesture === '') { continue }
         counts[gesture] = (counts[gesture] || 0) + 1;
 
@@ -142,10 +141,12 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
                     handGestures.push(handGesture)
                     // console.log(handGesture)
                 })
+
             }
+            handleChangeHandGesture(handGestures)
+
             // plotter(hands)
 
-            handleChangeHandGesture(handGestures)
             requestAnimationFrame(renderResults);
         }
 
