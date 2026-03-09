@@ -62,22 +62,51 @@ button:focus-visible {
 }
 
 .video-wrapper {
-  /* border: 2px solid red; */
+  border: 2px solid red;
   display: flex;
   justify-content: center;
-  /* position: relative; */
+  /* width: 640px;
+  height: 480px; */
+  position: relative;
 }
 
 .canvas {
   position: absolute;
   z-index: 9;
-  width: 640;
-  height: 480;
+  width: 640px;
+  height: 480px;
 }
 
 .video {
   position: absolute;
   z-index: 9;
-  width: 640;
-  height: 480;
+  width: 640px;
+  height: 480px;
+}
+
+.popup-containter {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pup-image {
+  /* animation: slide-up 1s ease-in-out; */
+  z-index: 9;
+  transform: translateY(100%);
+  transition: transform 1s ease-out;
+}
+
+.pup-image.slide-up {
+  /* animation: slide-up 1s ease-in-out; */
+  transform: translateY(0);
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

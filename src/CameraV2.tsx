@@ -2,18 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { detect } from "./detector/Detector-V2";
 import type { HandGesture } from "./fingerpose/Fingerpose";
+import Popup from "./Popup";
+import Puppy from "./assets/pup.png";
 
 const CameraV2 = () => {
   const webcamRef = useRef<Webcam | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [handGestures, setHandGestures] = useState<HandGesture[]>([]);
+  const [isVisible, setIsVisible] = useState(false);
 
   const handleChangeHandGestures = (newHandGestures: HandGesture[]) => {
-    console.log(handGestures, newHandGestures);
     if (handGestures != newHandGestures) {
-      console.log("change gestures");
       setHandGestures(newHandGestures);
+      console.log(handGestures);
     }
   };
 
@@ -57,6 +59,17 @@ const CameraV2 = () => {
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>
       </div>
+
+      <div className="popup-containter">
+        <button onClick={() => setIsVisible(!isVisible)}>
+          Toggle Animation
+        </button>
+        <img
+          className={`pup-image ${handGestures[0]?.gesture == "dog" ? "slide-up" : ""}`}
+          src={Puppy}
+        ></img>
+      </div>
+      {/* <Popup ></Popup> */}
     </div>
   );
 };

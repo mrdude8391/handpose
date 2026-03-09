@@ -57,7 +57,50 @@ const setElementSize = () => {
 
 }
 
+const history_left: string[] = [];
+const history_right: string[] = [];
 
+const WINDOW_SIZE = 10;
+
+const smoothPrediction = (prediction: string, handedness: string) => {
+    let currentHistory: string[] = [];
+    // add the prediction to the history
+    if (handedness === 'left') {
+        history_left.push(prediction)
+        // shift array keep the history within the window size
+        if (history_left.length > WINDOW_SIZE) {
+            history_left.shift()
+        }
+        currentHistory = history_left
+    } else {
+        history_right.push(prediction)
+        // shift array keep the history within the window size
+        if (history_right.length > WINDOW_SIZE) {
+            history_right.shift()
+        }
+        currentHistory = history_right
+    }
+
+
+    // find most common gesture
+    const counts: Record<string, number> = {}; // Using an object as a hash map
+    let maxCount = 0
+    let mostFrequent = ''
+
+    for (const gesture of currentHistory) {
+
+
+        if (gesture === '') { continue }
+        counts[gesture] = (counts[gesture] || 0) + 1;
+
+        if (counts[gesture] > maxCount) {
+            maxCount = counts[gesture]
+            mostFrequent = gesture
+        }
+    }
+    // console.log(counts)
+    return mostFrequent
+}
 
 export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: boolean, canvasRef: RefObject<HTMLCanvasElement | null>, handleChangeHandGesture: (handGestures: HandGesture[]) => void) => {
     console.log("detect")
@@ -81,24 +124,28 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
             setElementSize()
             const video = webcam.video as HTMLVideoElement
             const detector = await detectorPromise
-            hands = await detector.estimateHands(video, { flipHorizontal: false }) // array of hands
-
-            initializeCanvas(canvasRef)
-
             let handGestures: HandGesture[] = []
 
-            hands.forEach((hand) => {
-                drawHand(hand)
-                const estimatedGesture = estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
-                const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
-                const handGesture = { hand: handedness, gesture: estimatedGesture.name }
-                handGestures.push(handGesture)
-                console.log(handGesture)
-            })
+            hands = await detector.estimateHands(video, { flipHorizontal: false }) // array of hands
+
+            if (hands.length > 0) {
+                // console.log(hands)
+
+                initializeCanvas(canvasRef)
+
+                hands.forEach((hand) => {
+                    drawHand(hand)
+                    const estimatedGesture = estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
+                    const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
+                    const mostFrequentGesture = smoothPrediction(estimatedGesture.name, handedness)
+                    const handGesture = { hand: handedness, gesture: mostFrequentGesture }
+                    handGestures.push(handGesture)
+                    // console.log(handGesture)
+                })
+            }
             // plotter(hands)
 
             handleChangeHandGesture(handGestures)
-            // if (hands.length > 0) console.log(hands)
             requestAnimationFrame(renderResults);
         }
 
