@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { detect } from "./detector/Detector-V2";
 import type { HandGesture } from "./fingerpose/Fingerpose";
@@ -33,21 +33,27 @@ const CameraV2 = () => {
   }, [isDetecting]);
 
   return (
-    <div className="camera">
+    <div className="app-wrapper">
       <div className="menu">
         <button onClick={() => setIsDetecting(!isDetecting)}>
           {isDetecting ? "Stop" : "Start"}
         </button>
-        <div>
-          {handGestures.map((o) => (
+        <div className="gestures-container">
+          <p>Hand : {handGestures[0]?.hand}</p>
+          <p>Gesture : {handGestures[0]?.gesture}</p>
+
+          <p>Hand : {handGestures[1]?.hand}</p>
+          <p>Gesture : {handGestures[1]?.gesture}</p>
+
+          {/* {handGestures.map((o) => (
             <>
               <p>{o.hand}</p>
               <p>{o.gesture}</p>
             </>
-          ))}
+          ))} */}
         </div>
       </div>
-      <div className="wrapper">
+      <div className="video-wrapper">
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>
       </div>

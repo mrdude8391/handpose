@@ -24,7 +24,7 @@ export const createDetector = () => {
             runtime: "mediapipe",
             solutionPath: "node_modules/@mediapipe/hands",
             modelType: "full",
-            maxHands: 4
+            maxHands: 2
         };
         detectorPromise = handPoseDetection.createDetector(model, detectorConfig);
         console.log("Detector created")

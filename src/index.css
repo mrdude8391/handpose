@@ -57,15 +57,15 @@ button:focus-visible {
   }
 }
 
-.camera {
-  border: 2px solid red;
+.app-wrapper {
+  /* border: 2px solid red; */
 }
 
-.wrapper {
-  border: 2px solid red;
+.video-wrapper {
+  /* border: 2px solid red; */
   display: flex;
   justify-content: center;
-  position: relative;
+  /* position: relative; */
 }
 
 .canvas {
