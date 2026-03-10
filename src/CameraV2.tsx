@@ -15,7 +15,7 @@ const CameraV2 = () => {
   const handleChangeHandGestures = (newHandGestures: HandGesture[]) => {
     if (newHandGestures.length > 0) {
       setHandGestures(newHandGestures);
-      console.log(handGestures);
+      // console.log(handGestures);
     }
   };
 

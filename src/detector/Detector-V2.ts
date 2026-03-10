@@ -61,44 +61,49 @@ const history_left: string[] = [];
 const counts_left: Record<string, number> = {};
 
 const history_right: string[] = [];
+const counts_right: Record<string, number> = {};
 
-const WINDOW_SIZE = 10;
+
+const WINDOW_SIZE = 20;
+
+// 1. add the prediction to the history
+// 2. log the prediction into the dictionary along with its count
+// 3. check if the history is within max size 
+// 4. if its too big, then shift
+// 4.1  then take the oldest and find in dictionary, reducing count by 1
+// ** this keeps the dictionary with a count that reflects the history
+// 5. call reduce on the dictionary values
 
 const smoothPrediction = (prediction: string, handedness: string) => {
+    console.log(prediction)
     // add the prediction to the history
-    if (handedness === 'left') {
+    if (handedness === 'Left') {
         history_left.push(prediction)
         counts_left[prediction] = (counts_left[prediction] || 0) + 1;
         // shift array keep the history within the window size
         if (history_left.length > WINDOW_SIZE) {
-            const oldest = history_left.shift()
-            if (oldest) {
-                counts_left[oldest] -= 1;
-            }
+            const oldest = history_left.shift() as string
+            counts_left[oldest] -= 1;
         }
+        // reduct to find max key value
+        const mostFrequent = Object.entries(counts_left).reduce((acc, curr) => {
+            return curr[1] > acc[1] ? curr : acc
+        })
+        return mostFrequent[0]
     } else {
         history_right.push(prediction)
+        counts_right[prediction] = (counts_right[prediction] || 0) + 1;
         // shift array keep the history within the window size
         if (history_right.length > WINDOW_SIZE) {
-            history_right.shift()
+            const oldest = history_right.shift() as string
+            counts_right[oldest] -= 1;
         }
+        // reduct to find max key value
+        const mostFrequent = Object.entries(counts_right).reduce((acc, curr) => {
+            return curr[1] > acc[1] ? curr : acc
+        })
+        return mostFrequent[0]
     }
-    // find most common gesture
-    const counts: Record<string, number> = {}; // Using an object as a hash map
-    let maxCount = 0
-    let mostFrequent = ''
-
-    for (const gesture of history_left) {
-        if (gesture === '') { continue }
-        counts[gesture] = (counts[gesture] || 0) + 1;
-
-        if (counts[gesture] > maxCount) {
-            maxCount = counts[gesture]
-            mostFrequent = gesture
-        }
-    }
-    // console.log(counts)
-    return mostFrequent
 }
 
 export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: boolean, canvasRef: RefObject<HTMLCanvasElement | null>, handleChangeHandGesture: (handGestures: HandGesture[]) => void) => {
@@ -137,6 +142,7 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
                     const estimatedGesture = estimateGestures(hand.keypoints3D as handPoseDetection.Keypoint[])
                     const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
                     const mostFrequentGesture = smoothPrediction(estimatedGesture.name, handedness)
+                    console.log('most freq', mostFrequentGesture)
                     const handGesture = { hand: handedness, gesture: mostFrequentGesture }
                     handGestures.push(handGesture)
                     // console.log(handGesture)
