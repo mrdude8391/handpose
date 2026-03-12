@@ -63,7 +63,6 @@ const counts_left: Record<string, number> = {};
 const history_right: string[] = [];
 const counts_right: Record<string, number> = {};
 
-
 const WINDOW_SIZE = 20;
 
 // 1. add the prediction to the history
@@ -106,6 +105,23 @@ const smoothPrediction = (prediction: string, handedness: string) => {
     }
 }
 
+let gestureState = 0
+
+const processSequence = (gesture: string) => {
+    if (gestureState === 0 && gesture === 'thumbs_up') {
+        gestureState = 1
+        console.log('state', gestureState)
+
+    } else if (gestureState === 1 && gesture === 'victory') {
+        gestureState = 2
+        console.log('state', gestureState)
+    } else if (gestureState === 2 && gesture === 'dog') {
+        console.log('sequence detected')
+        gestureState = 0
+    }
+
+}
+
 export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: boolean, canvasRef: RefObject<HTMLCanvasElement | null>, handleChangeHandGesture: (handGestures: HandGesture[]) => void) => {
     console.log("detect")
     webcam = webcamRef.current
@@ -143,6 +159,7 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
                     const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
                     const mostFrequentGesture = smoothPrediction(estimatedGesture.name, handedness)
                     console.log('most freq', mostFrequentGesture)
+                    processSequence(mostFrequentGesture)
                     const handGesture = { hand: handedness, gesture: mostFrequentGesture }
                     handGestures.push(handGesture)
                     // console.log(handGesture)
