@@ -105,20 +105,29 @@ const smoothPrediction = (prediction: string, handedness: string) => {
     }
 }
 
-let gestureState = 0
+let countdown = 0
+let combo_idx = 0
+const combo = ['thumbs_up', 'victory', 'dog']
 
-const processSequence = (gesture: string) => {
-    if (gestureState === 0 && gesture === 'thumbs_up') {
-        gestureState = 1
-        console.log('state', gestureState)
-
-    } else if (gestureState === 1 && gesture === 'victory') {
-        gestureState = 2
-        console.log('state', gestureState)
-    } else if (gestureState === 2 && gesture === 'dog') {
-        console.log('sequence detected')
-        gestureState = 0
+const processSequence = (gesture: string, combo: string[]) => {
+    console.log(gesture, countdown, combo_idx)
+    if (combo_idx >= combo.length) {
+        combo_idx = 0
+        console.log('sequence detected and reset')
     }
+    if (countdown === 0 && gesture === combo[0]) {
+        countdown = 200
+        combo_idx = 1
+    }
+
+    if (countdown > 0) {
+        if (gesture === combo[combo_idx]) {
+            countdown = 200
+            combo_idx += 1
+        }
+        countdown -= 1
+    }
+
 
 }
 
@@ -159,7 +168,8 @@ export const detect = async (webcamRef: RefObject<Webcam | null>, isDetecting: b
                     const handedness = hand.handedness == 'Left' ? 'Right' : 'Left'
                     const mostFrequentGesture = smoothPrediction(estimatedGesture.name, handedness)
                     console.log('most freq', mostFrequentGesture)
-                    processSequence(mostFrequentGesture)
+                    processSequence(mostFrequentGesture, combo)
+
                     const handGesture = { hand: handedness, gesture: mostFrequentGesture }
                     handGestures.push(handGesture)
                     // console.log(handGesture)
