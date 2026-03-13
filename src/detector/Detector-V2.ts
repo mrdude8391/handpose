@@ -1,4 +1,3 @@
-import type { HandGesture } from "./../fingerpose/Fingerpose";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs-core";
 // Register WebGL backend.
@@ -7,8 +6,14 @@ import "@mediapipe/hands";
 import type { MediaPipeHandsMediaPipeModelConfig } from "@tensorflow-models/hand-pose-detection";
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
-import { drawHand, initializeCanvas, plotter } from "../Plotter";
+import { drawHand, initializeCanvas } from "../Plotter";
 import { estimateGestures } from "../fingerpose/Fingerpose";
+
+export interface HandGesture {
+    hand: string,
+    gesture: string
+}
+
 // 1. Create Detector
 // 2. Run Inference
 
@@ -17,7 +22,7 @@ let detectorPromise: Promise<handPoseDetection.HandDetector> | null = null;
 let webcam: Webcam | null = null;
 let canvas: HTMLCanvasElement | null = null;
 
-export const createDetector = () => {
+const createDetector = async () => {
     if (!detectorPromise) {
         const model = handPoseDetection.SupportedModels.MediaPipeHands;
         const detectorConfig: MediaPipeHandsMediaPipeModelConfig = {
@@ -29,7 +34,6 @@ export const createDetector = () => {
         detectorPromise = handPoseDetection.createDetector(model, detectorConfig);
         console.log("Detector created");
     }
-    return detectorPromise;
 };
 
 const disposeDetector = () => {
@@ -169,24 +173,27 @@ export const detect = async (
             const detector = await detectorPromise;
             let handGestures: HandGesture[] = [];
 
-            hands = await detector.estimateHands(video, { flipHorizontal: false }); // array of hands
+            // array of hands
+            hands = await detector.estimateHands(video, { flipHorizontal: false });
 
             if (hands.length > 0) {
                 // console.log(hands)
 
                 initializeCanvas(canvasRef);
 
+                // this array will have 1 hand item or 2 hand items, but the left/right being 1st or 2nd will change depending on detection order
                 hands.forEach((hand) => {
                     drawHand(hand);
                     const estimatedGesture = estimateGestures(
                         hand.keypoints3D as handPoseDetection.Keypoint[],
                     );
                     const handedness = hand.handedness == "Left" ? "Right" : "Left";
+                    // swap handedness since webcam is not flipped
                     const mostFrequentGesture = smoothPrediction(
                         estimatedGesture.name,
                         handedness,
                     );
-                    console.log("most freq", mostFrequentGesture);
+                    // console.log("most freq", mostFrequentGesture);
                     processSequence(mostFrequentGesture, combo);
 
                     const handGesture = {

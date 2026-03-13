@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { detect } from "./detector/Detector-V2";
-import type { HandGesture } from "./fingerpose/Fingerpose";
+import type { HandGesture } from "./detector/Detector-V2";
 import Popup from "./Popup";
 
 const CameraV2 = () => {
@@ -39,11 +39,14 @@ const CameraV2 = () => {
           {isDetecting ? "Stop" : "Start"}
         </button>
         <div className="gestures-container">
-          <p>Hand : {handGestures[0]?.hand}</p>
-          <p>Gesture : {handGestures[0]?.gesture}</p>
-
-          <p>Hand : {handGestures[1]?.hand}</p>
-          <p>Gesture : {handGestures[1]?.gesture}</p>
+          <div className="hand-wrapper">
+            <p>Hand : {handGestures[0]?.hand}</p>
+            <p>Gesture : {handGestures[0]?.gesture}</p>
+          </div>
+          <div className="hand-wrapper">
+            <p>Hand : {handGestures[1]?.hand}</p>
+            <p>Gesture : {handGestures[1]?.gesture}</p>
+          </div>
 
           {/* {handGestures.map((o) => (
             <>

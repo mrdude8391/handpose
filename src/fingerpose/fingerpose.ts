@@ -9,11 +9,6 @@ const GE = new fp.GestureEstimator([
     dogDescription
 ]);
 
-export interface HandGesture {
-    hand: string,
-    gesture: string
-}
-
 interface Keypoint3D {
     x: number;
     y: number;

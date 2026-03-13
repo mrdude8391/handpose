@@ -1,6 +1,6 @@
 // import { useState } from "react";
 import Puppy from "./assets/pup.png";
-import type { HandGesture } from "./fingerpose/Fingerpose";
+import type { HandGesture } from "./detector/Detector-V2";
 
 interface PopupProps {
   gesture: HandGesture;
