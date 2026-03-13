@@ -14,9 +14,19 @@ export interface HandGesture {
     gesture: string
 }
 
+interface Keypoint3D {
+    x: number;
+    y: number;
+    z: number;
+}
+
 export const estimateGestures = (keypoints3D: Keypoint[]) => {
+    const formattedKeypoints: Keypoint3D[] = keypoints3D.map((kp) => {
+        const z = kp.z as number
+        return { x: kp.x, y: kp.y, z: z }
+    })
     // using a minimum match score of 8.5 (out of 10)
-    const estimatedGestures = GE.estimate(keypoints3D, 8.5);
+    const estimatedGestures = GE.estimate(formattedKeypoints, 8.5);
     console.log('est', estimatedGestures)
     let result = {
         name: '',
