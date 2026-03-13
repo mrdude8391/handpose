@@ -116,15 +116,26 @@ const processSequence = (gesture: string, combo: string[]) => {
         console.log('sequence detected and reset')
     }
     if (countdown === 0 && gesture === combo[0]) {
+        // if we are neutral and user inputs combo start we initiate the coundown and move idx forward
         countdown = 200
         combo_idx = 1
     }
 
     if (countdown > 0) {
+        // countdown is started and we are looking for the next move
         if (gesture === combo[combo_idx]) {
+            // if user inputs the next move, we can reset the countdown and move idx forward
             countdown = 200
             combo_idx += 1
+        } else if (gesture === combo[combo_idx - 1]) {
+            // if the user is still inputting the current move, then we can just reset the countdown indefinitely
+            countdown = 200
+        } else {
+            // user inputs something that is not the next move, or the current move, meaning its the wrong move
+            // we have to cancel the combo since the inputs are wrong 
+            combo_idx = 0
         }
+        // at the end we always move the countdown down 
         countdown -= 1
     }
 
