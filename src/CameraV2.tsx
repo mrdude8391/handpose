@@ -3,14 +3,12 @@ import Webcam from "react-webcam";
 import { detect } from "./detector/Detector-V2";
 import type { HandGesture } from "./fingerpose/Fingerpose";
 import Popup from "./Popup";
-import Puppy from "./assets/pup.png";
 
 const CameraV2 = () => {
   const webcamRef = useRef<Webcam | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [handGestures, setHandGestures] = useState<HandGesture[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
 
   const handleChangeHandGestures = (newHandGestures: HandGesture[]) => {
     if (newHandGestures.length > 0) {
