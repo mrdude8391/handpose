@@ -60,16 +60,7 @@ const CameraV2 = () => {
         <canvas ref={canvasRef} className="canvas"></canvas>
       </div>
 
-      <div className="popup-containter">
-        <button onClick={() => setIsVisible(!isVisible)}>
-          Toggle Animation
-        </button>
-        <img
-          className={`pup-image ${handGestures[0]?.gesture == "dog" ? "slide-up" : ""}`}
-          src={Puppy}
-        ></img>
-      </div>
-      {/* <Popup ></Popup> */}
+      <Popup gesture={handGestures[0]}></Popup>
     </div>
   );
 };
