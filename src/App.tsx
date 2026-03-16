@@ -1,17 +1,10 @@
-import { useState } from "react";
-
 import "./App.css";
-import { Camera } from "./Camera";
-import CameraV2 from "./CameraV2";
-import Canvas from "./Canvas";
+import Camera from "./components/Camera";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
-      {/* <Camera></Camera> */}
-      <CameraV2></CameraV2>
+      <Camera></Camera>
     </>
   );
 }

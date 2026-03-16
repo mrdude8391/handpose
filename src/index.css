@@ -102,11 +102,12 @@ button:focus-visible {
   transform: translateY(0);
 }
 
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.hands-container {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-evenly; */
+}
+
+.hand-wrapper {
+  flex-grow: 1;
 }

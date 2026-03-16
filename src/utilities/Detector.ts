@@ -6,13 +6,10 @@ import "@mediapipe/hands";
 import type { MediaPipeHandsMediaPipeModelConfig } from "@tensorflow-models/hand-pose-detection";
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
-import { drawHand, initializeCanvas } from "../Plotter";
-import { estimateGestures } from "../fingerpose/Fingerpose";
+import { drawHand, initializeCanvas } from "./Plotter";
+import { estimateGestures } from "./fingerpose/Fingerpose";
 
-export interface HandGesture {
-    hand: string,
-    gesture: string
-}
+export type HandGesture = Record<string, string>
 
 // 1. Create Detector
 // 2. Run Inference
@@ -112,7 +109,7 @@ let countdown = 0;
 let combo_idx = 0;
 const combo = ["thumbs_up", "victory", "dog"];
 
-const processSequence = (gesture: string, combo: string[]) => {
+const detectCombo = (gesture: string, combo: string[]) => {
     console.log(gesture, countdown, combo_idx);
     if (combo_idx >= combo.length) {
         combo_idx = 0;
@@ -147,7 +144,7 @@ export const detect = async (
     webcamRef: RefObject<Webcam | null>,
     isDetecting: boolean,
     canvasRef: RefObject<HTMLCanvasElement | null>,
-    handleChangeHandGesture: (handGestures: HandGesture[]) => void,
+    handleChangeHandGesture: (handGestures: HandGesture) => void,
 ) => {
     console.log("detect");
     webcam = webcamRef.current;
@@ -171,14 +168,16 @@ export const detect = async (
             setElementSize();
             const video = webcam.video as HTMLVideoElement;
             const detector = await detectorPromise;
-            let handGestures: HandGesture[] = [];
+            const handGesture: HandGesture = {
+                left: '',
+                right: '',
+            };
 
             // array of hands
             hands = await detector.estimateHands(video, { flipHorizontal: false });
 
             if (hands.length > 0) {
                 // console.log(hands)
-
                 initializeCanvas(canvasRef);
 
                 // this array will have 1 hand item or 2 hand items, but the left/right being 1st or 2nd will change depending on detection order
@@ -187,24 +186,22 @@ export const detect = async (
                     const estimatedGesture = estimateGestures(
                         hand.keypoints3D as handPoseDetection.Keypoint[],
                     );
-                    const handedness = hand.handedness == "Left" ? "Right" : "Left";
                     // swap handedness since webcam is not flipped
+                    const handedness = hand.handedness == "Left" ? "Right" : "Left";
+                    // smooth out estimates using max vote technique
                     const mostFrequentGesture = smoothPrediction(
                         estimatedGesture.name,
                         handedness,
                     );
                     // console.log("most freq", mostFrequentGesture);
-                    processSequence(mostFrequentGesture, combo);
+                    // input the clean gesture signal to look for combo
+                    detectCombo(mostFrequentGesture, combo);
 
-                    const handGesture = {
-                        hand: handedness,
-                        gesture: mostFrequentGesture,
-                    };
-                    handGestures.push(handGesture);
+                    handGesture[handedness.toLocaleLowerCase()] = mostFrequentGesture
                     // console.log(handGesture)
                 });
             }
-            handleChangeHandGesture(handGestures);
+            handleChangeHandGesture(handGesture);
 
             // plotter(hands)
 

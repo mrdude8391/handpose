@@ -1,20 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { detect } from "./detector/Detector-V2";
-import type { HandGesture } from "./detector/Detector-V2";
+// import { detect } from "../utilities/Detector-V2";
+// import type { HandGesture } from "../utilities/Detector-V2";
+import { detect } from "../utilities/Detector";
+import type { HandGesture } from "../utilities/Detector";
 import Popup from "./Popup";
 
-const CameraV2 = () => {
+const Camera = () => {
   const webcamRef = useRef<Webcam | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [handGestures, setHandGestures] = useState<HandGesture[]>([]);
+  const [handGesture, setHandGesture] = useState<HandGesture>({
+    left: "",
+    right: "",
+  });
 
-  const handleChangeHandGestures = (newHandGestures: HandGesture[]) => {
-    if (newHandGestures.length > 0) {
-      setHandGestures(newHandGestures);
-      // console.log(handGestures);
-    }
+  const [isGestureDog, setIsGestureDog] = useState(false);
+
+  const handleChangeHandGesture = (newHands: HandGesture) => {
+    // this event handler is passed to the detect function during the first render of this component
+    setHandGesture(newHands);
+    setIsGestureDog(newHands.left === "dog" || newHands.right === "dog");
   };
 
   const [isDetecting, setIsDetecting] = useState(false);
@@ -29,7 +35,7 @@ const CameraV2 = () => {
 
     // rendercounter.current += 1;
     // console.log("rerender", rendercounter.current);
-    detect(webcamRef, isDetecting, canvasRef, handleChangeHandGestures);
+    detect(webcamRef, isDetecting, canvasRef, handleChangeHandGesture);
   }, [isDetecting]);
 
   return (
@@ -38,14 +44,16 @@ const CameraV2 = () => {
         <button onClick={() => setIsDetecting(!isDetecting)}>
           {isDetecting ? "Stop" : "Start"}
         </button>
-        <div className="gestures-container">
+        <div className="hands-container">
           <div className="hand-wrapper">
-            <p>Hand : {handGestures[0]?.hand}</p>
-            <p>Gesture : {handGestures[0]?.gesture}</p>
+            <p>Left Hand</p>
+            {/* <p>Hand : {handGestures[0]?.hand}</p> */}
+            <p>Gesture : {handGesture.left}</p>
           </div>
           <div className="hand-wrapper">
-            <p>Hand : {handGestures[1]?.hand}</p>
-            <p>Gesture : {handGestures[1]?.gesture}</p>
+            <p>Right Hand</p>
+            {/* <p>Hand : {handGestures[1]?.hand}</p> */}
+            <p>Gesture : {handGesture.right}</p>
           </div>
 
           {/* {handGestures.map((o) => (
@@ -61,9 +69,9 @@ const CameraV2 = () => {
         <canvas ref={canvasRef} className="canvas"></canvas>
       </div>
 
-      <Popup gesture={handGestures[0]}></Popup>
+      <Popup isGestureDog={isGestureDog}></Popup>
     </div>
   );
 };
 
-export default CameraV2;
+export default Camera;
