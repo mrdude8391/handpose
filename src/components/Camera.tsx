@@ -5,6 +5,7 @@ import Webcam from "react-webcam";
 import { detect } from "../utilities/Detector";
 import type { HandGesture } from "../utilities/Detector";
 import Popup from "./Popup";
+import { useWebcam } from "../hooks/useWebcam";
 
 const Camera = () => {
   const webcamRef = useRef<Webcam | null>(null);
@@ -25,17 +26,24 @@ const Camera = () => {
 
   const [isDetecting, setIsDetecting] = useState(false);
 
+  const hasWebcam = useWebcam();
+
   // let rendercounter = useRef(0);
 
   useEffect(() => {
-    // without this use effect everytime we update the DOM using use state the component rerenders and calls detect().
-    // This triggers an infinite rerender loop because on every detect it changes the hand gestures list.
-    // We add this useEffect hook to only call detect() whenever isDetecting changes.
-    // this allows the DOM to rerender to update the handGestestures state variable without calling detect(). avoiding the infinite loop
+    if (!hasWebcam) {
+      console.log("Webcam detected: ", hasWebcam);
+      return;
+    } else {
+      // without this use effect everytime we update the DOM using use state the component rerenders and calls detect().
+      // This triggers an infinite rerender loop because on every detect it changes the hand gestures list.
+      // We add this useEffect hook to only call detect() whenever isDetecting changes.
+      // this allows the DOM to rerender to update the handGestestures state variable without calling detect(). avoiding the infinite loop
 
-    // rendercounter.current += 1;
-    // console.log("rerender", rendercounter.current);
-    detect(webcamRef, isDetecting, canvasRef, handleChangeHandGesture);
+      // rendercounter.current += 1;
+      // console.log("rerender", rendercounter.current);
+      detect(webcamRef, isDetecting, canvasRef, handleChangeHandGesture);
+    }
   }, [isDetecting]);
 
   return (
@@ -64,6 +72,7 @@ const Camera = () => {
           ))} */}
         </div>
       </div>
+      {hasWebcam ? <div>yes webcam</div> : <div>no webcam</div>}
       <div className="video-wrapper">
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>

@@ -44,6 +44,10 @@ const disposeDetector = () => {
     return;
 };
 
+const hasWebcam = () => {
+    return (webcam && webcam.video && webcam.video.readyState === 4)
+}
+
 const setElementSize = () => {
     if (webcam && canvas && webcam.video) {
         const videoWidth = webcam.video.videoWidth;
@@ -84,7 +88,7 @@ const smoothPrediction = (prediction: string, handedness: string) => {
             const oldest = history_left.shift() as string;
             counts_left[oldest] -= 1;
         }
-        // reduct to find max key value
+        // reduce to find max key value
         const mostFrequent = Object.entries(counts_left).reduce((acc, curr) => {
             return curr[1] > acc[1] ? curr : acc;
         });
