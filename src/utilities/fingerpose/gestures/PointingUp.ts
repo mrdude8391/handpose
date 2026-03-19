@@ -10,9 +10,10 @@ const pointUpDescription = new fp.GestureDescription('Point Up');
 // - direction: vertical up (best)
 // - direction: diagonal up left / right (acceptable)
 pointUpDescription.addCurl(Finger.Index, FingerCurl.NoCurl, 1.0);
+pointUpDescription.addCurl(Finger.Index, FingerCurl.HalfCurl, 0.9);
+pointUpDescription.addDirection(Finger.Index, FingerDirection.VerticalUp, 1);
 pointUpDescription.addDirection(Finger.Index, FingerDirection.DiagonalUpLeft, 0.8);
 pointUpDescription.addDirection(Finger.Index, FingerDirection.DiagonalUpRight, 0.8);
-pointUpDescription.addDirection(Finger.Index, FingerDirection.VerticalUp, 1);
 
 
 // thumb:
@@ -29,6 +30,7 @@ pointUpDescription.addDirection(Finger.Index, FingerDirection.DiagonalUpRight, 0
 // - diagonal: up left / right (acceptable)
 for (let finger of [Finger.Middle, Finger.Ring, Finger.Pinky]) {
     pointUpDescription.addCurl(finger, FingerCurl.FullCurl, 1.0);
+    pointUpDescription.addCurl(finger, FingerCurl.HalfCurl, 0.9);
     pointUpDescription.addDirection(finger, FingerDirection.VerticalUp, 1);
     pointUpDescription.addDirection(finger, FingerDirection.DiagonalUpRight, 0.9);
     pointUpDescription.addDirection(finger, FingerDirection.DiagonalUpLeft, 0.9);
