@@ -125,8 +125,9 @@ const detectCombo = (gesture: string, handedness: string, combo: string[]) => {
             state.countdown = 200;
             state.comboIdx += 1;
         } else if (gesture === combo[state.comboIdx - 1]) {
-            // if the user is still inputting the current move, then we can just reset the countdown indefinitely
-            state.countdown = 200;
+            // if the user is still inputting the current move
+            // we can just reset the countdown indefinitely
+            // state.countdown = 200;
         } else {
             // user inputs something that is not the next move, or the current move, meaning its the wrong move
             // we have to cancel the combo since the inputs are wrong
