@@ -6,6 +6,10 @@ import { detect } from "../utilities/Detector";
 import type { HandGesture } from "../utilities/Detector";
 import Popup from "./Popup";
 import { useWebcam } from "../hooks/useWebcam";
+import bucket from "../assets/hats/black bucket.png";
+import tophat from "../assets/hats/black top hat.png";
+import hatman from "../assets/hats/hat man.png";
+import pirate from "../assets/hats/pirate hat.png";
 
 const Camera = () => {
   const webcamRef = useRef<Webcam | null>(null);
@@ -17,6 +21,9 @@ const Camera = () => {
   });
 
   const [isGestureDog, setIsGestureDog] = useState(false);
+
+  const [imageIdx, setImageIdx] = useState(0);
+  const images = [bucket, tophat, hatman, pirate];
 
   const handleChangeHandGesture = (newHands: HandGesture) => {
     // this event handler is passed to the detect function during the first render of this component
@@ -77,7 +84,7 @@ const Camera = () => {
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>
       </div>
-
+      <img src={images[0]} alt="display" />
       <Popup isGestureDog={isGestureDog}></Popup>
     </div>
   );
