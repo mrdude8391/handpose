@@ -44,10 +44,6 @@ const disposeDetector = () => {
     return;
 };
 
-const hasWebcam = () => {
-    return (webcam && webcam.video && webcam.video.readyState === 4)
-}
-
 const setElementSize = () => {
     if (webcam && canvas && webcam.video) {
         const videoWidth = webcam.video.videoWidth;
@@ -61,11 +57,15 @@ const setElementSize = () => {
     }
 };
 
-const history_left: string[] = [];
-const counts_left: Record<string, number> = {};
+type MaxVotingState = {
+    history: string[],
+    counts: Record<string, number>
+}
 
-const history_right: string[] = [];
-const counts_right: Record<string, number> = {};
+const smoothingHandState: Record<string, MaxVotingState> = {
+    Left: { history: [], counts: {} },
+    Right: { history: [], counts: {} },
+}
 
 const WINDOW_SIZE = 20;
 
@@ -79,52 +79,38 @@ const WINDOW_SIZE = 20;
 
 const smoothPrediction = (prediction: string, handedness: string) => {
     console.log(prediction);
+    const state = smoothingHandState[handedness]
     // add the prediction to the history
-    if (handedness === "Left") {
-        history_left.push(prediction);
-        counts_left[prediction] = (counts_left[prediction] || 0) + 1;
-        // shift array keep the history within the window size
-        if (history_left.length > WINDOW_SIZE) {
-            const oldest = history_left.shift() as string;
-            counts_left[oldest] -= 1;
-        }
-        // reduce to find max key value
-        const mostFrequent = Object.entries(counts_left).reduce((acc, curr) => {
-            return curr[1] > acc[1] ? curr : acc;
-        });
-        return mostFrequent[0];
-    } else {
-        history_right.push(prediction);
-        counts_right[prediction] = (counts_right[prediction] || 0) + 1;
-        // shift array keep the history within the window size
-        if (history_right.length > WINDOW_SIZE) {
-            const oldest = history_right.shift() as string;
-            counts_right[oldest] -= 1;
-        }
-        // reduct to find max key value
-        const mostFrequent = Object.entries(counts_right).reduce((acc, curr) => {
-            return curr[1] > acc[1] ? curr : acc;
-        });
-        return mostFrequent[0];
+    state.history.push(prediction);
+    state.counts[prediction] = (state.counts[prediction] || 0) + 1;
+    // shift array keep the history within the window size
+    if (state.history.length > WINDOW_SIZE) {
+        const oldest = state.history.shift() as string;
+        state.counts[oldest] -= 1;
     }
+    // reduce to find max key value
+    const mostFrequent = Object.entries(state.counts).reduce((acc, curr) => {
+        return curr[1] > acc[1] ? curr : acc;
+    });
+    return mostFrequent[0];
 };
 
 type ComboState = {
     countdown: number,
     comboIdx: number
 }
-const handStates: Record<string, ComboState> = {
+const comboHandState: Record<string, ComboState> = {
     Left: { countdown: 0, comboIdx: 0 },
     Right: { countdown: 0, comboIdx: 0 },
 }
 const combo = ["thumbs_up", "victory", "dog"];
 
 const detectCombo = (gesture: string, handedness: string, combo: string[]) => {
-    const state = handStates[handedness]
+    const state = comboHandState[handedness]
     console.log(gesture, state.countdown, state.comboIdx);
     if (state.comboIdx >= combo.length) {
         state.comboIdx = 0;
-        console.log("sequence detected and reset");
+        console.log("====\n\nsequence detected and reset\n\n====\n");
     }
     if (state.countdown === 0 && gesture === combo[0]) {
         // if we are neutral and user inputs combo start we initiate the coundown and move idx forward
