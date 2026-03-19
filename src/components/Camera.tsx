@@ -72,7 +72,7 @@ const Camera = () => {
           ))} */}
         </div>
       </div>
-      {hasWebcam ? <div>yes webcam</div> : <div>no webcam</div>}
+      {!hasWebcam && <div>No Webcam detected</div>}
       <div className="video-wrapper">
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>

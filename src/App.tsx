@@ -4,6 +4,7 @@ import Camera from "./components/Camera";
 function App() {
   return (
     <>
+      <h1>Gesture Detector</h1>
       <Camera></Camera>
     </>
   );
