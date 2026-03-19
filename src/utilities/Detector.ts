@@ -107,22 +107,22 @@ const combo = ["thumbs_up", "victory", "dog"];
 
 const detectCombo = (gesture: string, handedness: string, combo: string[]) => {
     const state = comboHandState[handedness]
-    console.log(gesture, state.countdown, state.comboIdx);
+    console.log(gesture, (state.countdown - Date.now()), state.comboIdx);
     if (state.comboIdx >= combo.length) {
         state.comboIdx = 0;
         console.log("====\n\nsequence detected and reset\n\n====\n");
     }
-    if (state.countdown === 0 && gesture === combo[0]) {
+    if (state.countdown <= Date.now() && gesture === combo[0]) {
         // if we are neutral and user inputs combo start we initiate the coundown and move idx forward
-        state.countdown = 200;
+        state.countdown = Date.now() + 2000 // 2 seconds;
         state.comboIdx = 1;
     }
 
-    if (state.countdown > 0) {
+    if (state.countdown > Date.now()) {
         // countdown is started and we are looking for the next move
         if (gesture === combo[state.comboIdx]) {
             // if user inputs the next move, we can reset the countdown and move idx forward
-            state.countdown = 200;
+            state.countdown = Date.now() + 2000 // 2 seconds;
             state.comboIdx += 1;
         } else if (gesture === combo[state.comboIdx - 1]) {
             // if the user is still inputting the current move
@@ -134,7 +134,11 @@ const detectCombo = (gesture: string, handedness: string, combo: string[]) => {
             state.comboIdx = 0;
         }
         // at the end we always move the countdown down
-        state.countdown -= 1;
+        // state.countdown -= 1;
+    } else {
+        // countdown ended and we have to reset the combo
+        state.comboIdx = 0;
+
     }
 
 };
