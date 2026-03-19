@@ -109,39 +109,47 @@ const smoothPrediction = (prediction: string, handedness: string) => {
     }
 };
 
-let countdown = 0;
-let combo_idx = 0;
+type ComboState = {
+    countdown: number,
+    comboIdx: number
+}
+const handStates: Record<string, ComboState> = {
+    Left: { countdown: 0, comboIdx: 0 },
+    Right: { countdown: 0, comboIdx: 0 },
+}
 const combo = ["thumbs_up", "victory", "dog"];
 
-const detectCombo = (gesture: string, combo: string[]) => {
-    console.log(gesture, countdown, combo_idx);
-    if (combo_idx >= combo.length) {
-        combo_idx = 0;
+const detectCombo = (gesture: string, handedness: string, combo: string[]) => {
+    const state = handStates[handedness]
+    console.log(gesture, state.countdown, state.comboIdx);
+    if (state.comboIdx >= combo.length) {
+        state.comboIdx = 0;
         console.log("sequence detected and reset");
     }
-    if (countdown === 0 && gesture === combo[0]) {
+    if (state.countdown === 0 && gesture === combo[0]) {
         // if we are neutral and user inputs combo start we initiate the coundown and move idx forward
-        countdown = 200;
-        combo_idx = 1;
+        state.countdown = 200;
+        state.comboIdx = 1;
     }
 
-    if (countdown > 0) {
+    if (state.countdown > 0) {
         // countdown is started and we are looking for the next move
-        if (gesture === combo[combo_idx]) {
+        if (gesture === combo[state.comboIdx]) {
             // if user inputs the next move, we can reset the countdown and move idx forward
-            countdown = 200;
-            combo_idx += 1;
-        } else if (gesture === combo[combo_idx - 1]) {
+            state.countdown = 200;
+            state.comboIdx += 1;
+        } else if (gesture === combo[state.comboIdx - 1]) {
             // if the user is still inputting the current move, then we can just reset the countdown indefinitely
-            countdown = 200;
+            state.countdown = 200;
         } else {
             // user inputs something that is not the next move, or the current move, meaning its the wrong move
             // we have to cancel the combo since the inputs are wrong
-            combo_idx = 0;
+            state.comboIdx = 0;
         }
         // at the end we always move the countdown down
-        countdown -= 1;
+        state.countdown -= 1;
     }
+
 };
 
 export const detect = async (
@@ -199,7 +207,7 @@ export const detect = async (
                     );
                     // console.log("most freq", mostFrequentGesture);
                     // input the clean gesture signal to look for combo
-                    detectCombo(mostFrequentGesture, combo);
+                    detectCombo(mostFrequentGesture, handedness, combo);
 
                     handGesture[handedness.toLocaleLowerCase()] = mostFrequentGesture
                     // console.log(handGesture)

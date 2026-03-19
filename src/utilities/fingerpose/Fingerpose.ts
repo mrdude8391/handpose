@@ -1,12 +1,14 @@
 import * as fp from "fingerpose";
 import type { Keypoint } from "@tensorflow-models/hand-pose-detection";
 import dogDescription from "./gestures/Dog";
+import pointUpDescription from "./gestures/PointingUp";
 
 // add "✌🏻" and "👍" as sample gestures
 const GE = new fp.GestureEstimator([
     fp.Gestures.VictoryGesture,
     fp.Gestures.ThumbsUpGesture,
-    dogDescription
+    dogDescription,
+    pointUpDescription
 ]);
 
 interface Keypoint3D {
