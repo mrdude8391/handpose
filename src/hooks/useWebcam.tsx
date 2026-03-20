@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 export const useWebcam = () => {
   const [hasWebcam, setHasWebcam] = useState(false);
-
   useEffect(() => {
     if (!navigator.mediaDevices?.enumerateDevices) {
       console.log("enumerateDevices() not supported.");
@@ -14,7 +13,7 @@ export const useWebcam = () => {
           const isWebcam = devices.some(
             (device) => device.kind === "videoinput",
           );
-          console.log(isWebcam);
+          // console.log(isWebcam);
           if (isWebcam) {
             setHasWebcam(true);
           } else {

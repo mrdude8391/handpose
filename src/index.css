@@ -84,6 +84,13 @@ button:focus-visible {
   height: 480px;
 }
 
+.hat {
+  position: absolute;
+  z-index: 9;
+  height: auto;
+  max-width: 240px;
+}
+
 .popup-containter {
   display: flex;
   flex-direction: column;

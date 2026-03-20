@@ -10,6 +10,7 @@ import bucket from "../assets/hats/black bucket.png";
 import tophat from "../assets/hats/black top hat.png";
 import hatman from "../assets/hats/hat man.png";
 import pirate from "../assets/hats/pirate hat.png";
+import { useGestureDetector } from "../hooks/useGestureDetector";
 
 const Camera = () => {
   const webcamRef = useRef<Webcam | null>(null);
@@ -31,27 +32,38 @@ const Camera = () => {
     setIsGestureDog(newHands.left === "dog" || newHands.right === "dog");
   };
 
+  const handleChangeImageIdx = () => {
+    setImageIdx((p) => p + 1);
+  };
+
   const [isDetecting, setIsDetecting] = useState(false);
 
   const hasWebcam = useWebcam();
-
+  useGestureDetector({
+    webcamRef,
+    canvasRef,
+    isDetecting,
+    handleChangeHandGesture,
+    handleChangeImageIdx,
+  });
   // let rendercounter = useRef(0);
+  // useEffect(() => {
+  //   if (!hasWebcam) {
+  //     console.log("Webcam detected: ", hasWebcam);
+  //     return;
+  //   } else {
+  //     console.log("Webcam detected: ", hasWebcam);
 
-  useEffect(() => {
-    if (!hasWebcam) {
-      console.log("Webcam detected: ", hasWebcam);
-      return;
-    } else {
-      // without this use effect everytime we update the DOM using use state the component rerenders and calls detect().
-      // This triggers an infinite rerender loop because on every detect it changes the hand gestures list.
-      // We add this useEffect hook to only call detect() whenever isDetecting changes.
-      // this allows the DOM to rerender to update the handGestestures state variable without calling detect(). avoiding the infinite loop
+  //     // without this use effect everytime we update the DOM using use state the component rerenders and calls detect().
+  //     // This triggers an infinite rerender loop because on every detect it changes the hand gestures list.
+  //     // We add this useEffect hook to only call detect() whenever isDetecting changes.
+  //     // this allows the DOM to rerender to update the handGestestures state variable without calling detect(). avoiding the infinite loop
 
-      // rendercounter.current += 1;
-      // console.log("rerender", rendercounter.current);
-      detect(webcamRef, isDetecting, canvasRef, handleChangeHandGesture);
-    }
-  }, [isDetecting]);
+  //     // rendercounter.current += 1;
+  //     // console.log("rerender", rendercounter.current);
+  //     // detect(webcamRef, isDetecting, canvasRef, handleChangeHandGesture);
+  //   }
+  // }, [isDetecting]);
 
   return (
     <div className="app-wrapper">
@@ -83,8 +95,8 @@ const Camera = () => {
       <div className="video-wrapper">
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>
+        <img className="hat" src={images[imageIdx]} alt="display" />
       </div>
-      <img src={images[0]} alt="display" />
       <Popup isGestureDog={isGestureDog}></Popup>
     </div>
   );
