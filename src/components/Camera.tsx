@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Webcam from "react-webcam";
 // import { detect } from "../utilities/Detector-V2";
 // import type { HandGesture } from "../utilities/Detector-V2";
-import { detect } from "../utilities/Detector";
 import type { HandGesture } from "../utilities/Detector";
 import Popup from "./Popup";
 import { useWebcam } from "../hooks/useWebcam";
@@ -39,6 +38,7 @@ const Camera = () => {
   const [isDetecting, setIsDetecting] = useState(false);
 
   const hasWebcam = useWebcam();
+
   useGestureDetector({
     webcamRef,
     canvasRef,
@@ -95,7 +95,7 @@ const Camera = () => {
       <div className="video-wrapper">
         <Webcam ref={webcamRef} className="video"></Webcam>
         <canvas ref={canvasRef} className="canvas"></canvas>
-        <img className="hat" src={images[imageIdx]} alt="display" />
+        <img className="hat" src={images[imageIdx]} />
       </div>
       <Popup isGestureDog={isGestureDog}></Popup>
     </div>
