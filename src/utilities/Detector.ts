@@ -28,6 +28,8 @@ const createDetector = async () => {
             modelType: "full",
             maxHands: 2,
         };
+        // instead of using promise logic, i can also await and resolve the promise right here
+        // but then i would need to change the detectorPromise to not a promise
         detectorPromise = handPoseDetection.createDetector(model, detectorConfig);
         console.log("Detector created");
     }
@@ -105,12 +107,13 @@ const comboHandState: Record<string, ComboState> = {
 }
 const combo = ["thumbs_up", "victory", "dog"];
 
-const detectCombo = (gesture: string, handedness: string, combo: string[]) => {
+const detectCombo = (gesture: string, handedness: string, combo: string[], handleChangeImageIdx: () => void) => {
     const state = comboHandState[handedness]
     console.log(gesture, (state.countdown - Date.now()), state.comboIdx);
     if (state.comboIdx >= combo.length) {
         state.comboIdx = 0;
         console.log("====\n\nsequence detected and reset\n\n====\n");
+        handleChangeImageIdx();
     }
     if (state.countdown <= Date.now() && gesture === combo[0]) {
         // if we are neutral and user inputs combo start we initiate the coundown and move idx forward
@@ -148,6 +151,8 @@ export const detect = async (
     isDetecting: boolean,
     canvasRef: RefObject<HTMLCanvasElement | null>,
     handleChangeHandGesture: (handGestures: HandGesture) => void,
+    handleChangeImageIdx: () => void,
+
 ) => {
     console.log("detect");
     webcam = webcamRef.current;
@@ -160,7 +165,6 @@ export const detect = async (
     await createDetector();
 
     const renderResults = async () => {
-        let hands: handPoseDetection.Hand[];
         if (
             detectorPromise &&
             webcam &&
@@ -177,7 +181,7 @@ export const detect = async (
             };
 
             // array of hands
-            hands = await detector.estimateHands(video, { flipHorizontal: false });
+            const hands = await detector.estimateHands(video, { flipHorizontal: false });
 
             if (hands.length > 0) {
                 // console.log(hands)
@@ -198,7 +202,7 @@ export const detect = async (
                     );
                     // console.log("most freq", mostFrequentGesture);
                     // input the clean gesture signal to look for combo
-                    detectCombo(mostFrequentGesture, handedness, combo);
+                    detectCombo(mostFrequentGesture, handedness, combo, handleChangeImageIdx);
 
                     handGesture[handedness.toLocaleLowerCase()] = mostFrequentGesture
                     // console.log(handGesture)
