@@ -58,47 +58,66 @@ button:focus-visible {
 }
 
 .app-wrapper {
-  /* border: 2px solid red; */
+  border: 2px solid blue;
+  display: flex;
+  flex-direction: column;
+  width: 640px;
+  max-width: 90vw;
 }
 
-.video-wrapper {
+.menu {
   /* border: 2px solid red; */
+  display: flex;
+  flex-direction: column;
+}
+
+.video-container {
+  border: 2px solid red;
   display: flex;
   justify-content: center;
   /* width: 640px;
-  height: 480px; */
   position: relative;
+  height: 480px; */
+}
+
+.overlay-element {
+  position: absolute;
+  z-index: 9;
+  max-width: 90vw;
+  height: auto;
+  width: 640px;
+  height: 480px;
+}
+
+/* .video {
+  border: 2px solid yellow;
+
+  position: absolute;
+  z-index: 9;
 }
 
 .canvas {
-  position: absolute;
-  z-index: 9;
-  width: 640px;
-  height: 480px;
-}
+  border: 2px solid green;
 
-.video {
   position: absolute;
   z-index: 9;
-  width: 640px;
-  height: 480px;
-}
+  max-width: 90vw;
+  height: auto;
+} */
 
 .hat {
-  position: absolute;
-  z-index: 9;
   height: auto;
   max-width: 240px;
 }
 
 .popup-containter {
   display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
 .pup-image {
   /* animation: slide-up 1s ease-in-out; */
+  /* width: 640px; */
   z-index: 9;
   transform: translateY(100%);
   transition: transform 1s ease-out;

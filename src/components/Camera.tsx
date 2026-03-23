@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 // import { detect } from "../utilities/Detector-V2";
 // import type { HandGesture } from "../utilities/Detector-V2";
-import type { HandGesture } from "../utilities/Detector";
+import { detect, type HandGesture } from "../utilities/Detector";
 import Popup from "./Popup";
 import { useWebcam } from "../hooks/useWebcam";
 import bucket from "../assets/hats/black bucket.png";
@@ -46,7 +46,6 @@ const Camera = () => {
     handleChangeHandGesture,
     handleChangeImageIdx,
   });
-  // let rendercounter = useRef(0);
   // useEffect(() => {
   //   if (!hasWebcam) {
   //     console.log("Webcam detected: ", hasWebcam);
@@ -61,16 +60,24 @@ const Camera = () => {
 
   //     // rendercounter.current += 1;
   //     // console.log("rerender", rendercounter.current);
-  //     // detect(webcamRef, isDetecting, canvasRef, handleChangeHandGesture);
+  //     detect(
+  //       webcamRef,
+  //       isDetecting,
+  //       canvasRef,
+  //       handleChangeHandGesture,
+  //       handleChangeImageIdx,
+  //     );
   //   }
   // }, [isDetecting]);
 
   return (
     <div className="app-wrapper">
       <div className="menu">
-        <button onClick={() => setIsDetecting(!isDetecting)}>
-          {isDetecting ? "Stop" : "Start"}
-        </button>
+        <div>
+          <button onClick={() => setIsDetecting(!isDetecting)}>
+            {isDetecting ? "Stop" : "Start"}
+          </button>
+        </div>
         <div className="hands-container">
           <div className="hand-wrapper">
             <p>Left Hand</p>
@@ -92,12 +99,12 @@ const Camera = () => {
         </div>
       </div>
       {!hasWebcam && <div>No Webcam detected</div>}
-      <div className="video-wrapper">
-        <Webcam ref={webcamRef} className="video"></Webcam>
-        <canvas ref={canvasRef} className="canvas"></canvas>
-        <img className="hat" src={images[imageIdx]} />
+      <div className="video-container">
+        <Webcam ref={webcamRef} className="video overlay-element"></Webcam>
+        <canvas ref={canvasRef} className="canvas overlay-element"></canvas>
+        <Popup isGestureDog={isGestureDog}></Popup>
       </div>
-      <Popup isGestureDog={isGestureDog}></Popup>
+      {/* <img className="hat overlay-element" src={images[imageIdx]} /> */}
     </div>
   );
 };
