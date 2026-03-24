@@ -103,19 +103,6 @@ export const useGestureDetector = ({
     }
   };
 
-  const setElementSize = () => {
-    if (webcamRef && canvasRef) {
-      const videoWidth = webcam.video.videoWidth;
-      const videoHeight = webcam.video.videoHeight;
-
-      webcam.video.width = videoWidth;
-      webcam.video.height = videoHeight;
-
-      canvas.width = videoWidth;
-      canvas.height = videoHeight;
-    }
-  };
-
   const createDetector = async () => {
     if (!detectorRef.current) {
       try {
