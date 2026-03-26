@@ -5,8 +5,9 @@ import "@tensorflow/tfjs-backend-webgl";
 import "@mediapipe/hands";
 import type Webcam from "react-webcam";
 import type { RefObject } from "react";
-import { drawHand, initializeCanvas } from "../utilities/Plotter";
+// import { drawHand, initializeCanvas } from "../utilities/Plotter";
 import { estimateGestures } from "../utilities/fingerpose/Fingerpose";
+import { usePlotter } from "./usePlotter";
 
 type HandGesture = Record<string, string>;
 
@@ -36,6 +37,8 @@ export const useGestureDetector = ({
 }: Props) => {
   const detectorRef = useRef<handPoseDetection.HandDetector | null>(null);
   const animationRef = useRef<number | null>(null);
+
+  const { drawHand } = usePlotter({ canvasRef });
 
   // --- smoothing ref ---
   const smoothingRef = useRef<Record<string, MaxVotingState>>({
@@ -158,7 +161,8 @@ export const useGestureDetector = ({
     // this array will have 1 hand item or 2 hand items,
     // but the left/right being 1st or 2nd will change depending on detection order
     if (hands.length > 0) {
-      initializeCanvas(canvasRef);
+      // Canvas initialization from the Plotter.ts module
+      // initializeCanvas(canvasRef);
 
       hands.forEach((hand) => {
         drawHand(hand);
@@ -186,6 +190,7 @@ export const useGestureDetector = ({
 
   // after mounting call this useEffect
   useEffect(() => {
+    // console.log("useGestureDetector useEffect");
     if (!isDetecting) {
       detectorRef.current?.dispose();
       detectorRef.current = null;
@@ -206,7 +211,8 @@ export const useGestureDetector = ({
     start();
 
     return () => {
-      // on unmount -> dispose of the detector and cancel queued animation frame
+      console.log("Cleanup Previous detector");
+      // on dependency change -> dispose of the old detector and cancel queued animation frame
       detectorRef.current?.dispose();
       detectorRef.current = null;
 
