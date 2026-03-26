@@ -1,3 +1,5 @@
+// Plotter JS module, reusable self contained file. 
+
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import type { RefObject } from "react";
 
@@ -26,85 +28,11 @@ export const initializeCanvas = (canvasRef: RefObject<HTMLCanvasElement | null>)
     } // assign canvas if null
 }
 
-export const plotter = (hands: handPoseDetection.Hand[]) => {
-
-    if (hands.length > 0 && canvas) {
-        const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-        ctx.strokeStyle = 'White';
-        ctx.lineWidth = 1;
-
-        const drawPoint = (points: handPoseDetection.Keypoint[], finger: number) => {
-            for (let i = 0; i < points.length; i++) {
-                const point = points[i]
-
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
-
-                ctx.fillStyle = fingerColorIndex[finger]
-                ctx.fill();
-            }
-        }
-
-        const drawPath = (points: handPoseDetection.Keypoint[]) => {
-            const region = new Path2D();
-            region.moveTo(points[0].x, points[0].y);
-
-            for (let i = 1; i < points.length; i++) {
-                const point = points[i];
-                region.lineTo(point.x, point.y);
-            }
-            ctx.stroke(region);
-        }
-
-        const drawFinger = (points: handPoseDetection.Keypoint[], finger: number) => {
-            // set up region for paths
-            const region = new Path2D();
-            region.moveTo(points[0].x, points[0].y);
-
-            if (finger === 4) {
-                // draw point
-
-                ctx.beginPath();
-                ctx.arc(points[0].x, points[0].y, 4, 0, 2 * Math.PI)
-                ctx.fillStyle = "yellow"
-                ctx.fill();
-            }
-
-            for (let i = 1; i < points.length; i++) {
-                const point = points[i];
-                // draw point
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
-                ctx.fillStyle = fingerColorIndex[finger]
-                ctx.fill();
-
-                // map line path
-                region.lineTo(point.x, point.y);
-            }
-            // stroke the region lines
-            ctx.stroke(region);
-        }
-
-        hands.forEach((hand) => {
-            const fingers = Object.keys(fingerLookupIndices); // array of strings of the fingers [thumb, index, middle,...]
-            for (let i = 0; i < fingers.length; i++) {
-                // const finger = fingers[i] i.e "thumb"
-                const points = fingerLookupIndices[fingers[i]].map(idx => hand.keypoints[idx]); // returns all the points for the i index finger
-                // drawPoint(points, i)
-                // drawPath(points);
-                drawFinger(points, i)
-            }
-        })
-        console.log(hands)
-    }
-}
-
 export const drawHand = (hand: handPoseDetection.Hand) => {
     if (hand && canvas && ctx) {
         ctx.strokeStyle = 'White';
         ctx.lineWidth = 1;
         const drawFinger = (points: handPoseDetection.Keypoint[], finger: number) => {
-
             // set up region for paths
             const region = new Path2D();
             region.moveTo(points[0].x, points[0].y);
@@ -144,3 +72,76 @@ export const drawHand = (hand: handPoseDetection.Hand) => {
         ctx.fill();
     }
 }
+
+// export const plotter = (hands: handPoseDetection.Hand[]) => {
+
+//     if (hands.length > 0 && canvas) {
+//         const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+//         ctx.strokeStyle = 'White';
+//         ctx.lineWidth = 1;
+
+//         const drawPoint = (points: handPoseDetection.Keypoint[], finger: number) => {
+//             for (let i = 0; i < points.length; i++) {
+//                 const point = points[i]
+
+//                 ctx.beginPath();
+//                 ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
+
+//                 ctx.fillStyle = fingerColorIndex[finger]
+//                 ctx.fill();
+//             }
+//         }
+
+//         const drawPath = (points: handPoseDetection.Keypoint[]) => {
+//             const region = new Path2D();
+//             region.moveTo(points[0].x, points[0].y);
+
+//             for (let i = 1; i < points.length; i++) {
+//                 const point = points[i];
+//                 region.lineTo(point.x, point.y);
+//             }
+//             ctx.stroke(region);
+//         }
+
+//         const drawFinger = (points: handPoseDetection.Keypoint[], finger: number) => {
+//             // set up region for paths
+//             const region = new Path2D();
+//             region.moveTo(points[0].x, points[0].y);
+
+//             if (finger === 4) {
+//                 // draw point
+
+//                 ctx.beginPath();
+//                 ctx.arc(points[0].x, points[0].y, 4, 0, 2 * Math.PI)
+//                 ctx.fillStyle = "yellow"
+//                 ctx.fill();
+//             }
+
+//             for (let i = 1; i < points.length; i++) {
+//                 const point = points[i];
+//                 // draw point
+//                 ctx.beginPath();
+//                 ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
+//                 ctx.fillStyle = fingerColorIndex[finger]
+//                 ctx.fill();
+
+//                 // map line path
+//                 region.lineTo(point.x, point.y);
+//             }
+//             // stroke the region lines
+//             ctx.stroke(region);
+//         }
+
+//         hands.forEach((hand) => {
+//             const fingers = Object.keys(fingerLookupIndices); // array of strings of the fingers [thumb, index, middle,...]
+//             for (let i = 0; i < fingers.length; i++) {
+//                 // const finger = fingers[i] i.e "thumb"
+//                 const points = fingerLookupIndices[fingers[i]].map(idx => hand.keypoints[idx]); // returns all the points for the i index finger
+//                 // drawPoint(points, i)
+//                 // drawPath(points);
+//                 drawFinger(points, i)
+//             }
+//         })
+//         console.log(hands)
+//     }
+// }
