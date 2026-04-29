@@ -1,73 +1,32 @@
-# React + TypeScript + Vite
+# 🌐 Hand Tracking Gesture Classifier
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📃 Description
 
-Currently, two official plugins are available:
+A Web app built using React and inference performed by MediaPipe Hands model. When a webcam is connected click start and the app will start detecting for hands. The main gesture is a "dog" hand sign which will summon the Fox Devil from the popular manga and anime series Chainsaw Man.<br>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🖼️ Demo
+<img width="480" height="270" alt="480gif" src="https://github.com/user-attachments/assets/c6fc85d9-d5e7-43ea-ac3a-5272f68248f5" /><br>
 
-## React Compiler
+## 👓 How it works
+The webcam's video input is fed into MediaPipe Hands API and for each frame it returns a list of hands with the 21 3D hand keypoints or landmarks. The keypoints are then fed into the Fingerpose library to estimate the gesture being performed. The signal output can be noisy (i.e. blank or incorrect estimate in a rapid stream of estimates) so the raw ouput is fed into a smoothing function that will return the most frequent estimate in the last 20 estimates.  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Libraries
+* [Fingerpose](https://github.com/andypotato/fingerpose/tree/master) - A useful library for classifying gestures based on calculated weights on finger curl and direction
+* [MediaPipeHands](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection/src/mediapipe) - MediaPipe's hand landmark detection model
 
-## Expanding the ESLint configuration
+### Installing
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* Clone repo
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Executing program
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+cd handpose
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📝 Forward
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The available gestures are essentially hard coded since they are calculated by math using the keypoints in relation to each other which can make the estimates finicky when trying to add new gestures. It would be an improvement if I could implement [MediaPipes gesture recognizer model](https://ai.google.dev/edge/mediapipe/solutions/vision/gesture_recognizer/web_js?_gl=1*1pnkns7*_up*MQ..*_ga*MTIzMzQ0MDE5LjE3Nzc0ODAzMTk.*_ga_P1DBVKWT6V*czE3Nzc0OTMwODMkbzIkZzAkdDE3Nzc0OTMwODMkajYwJGwwJGgxMjM3NzE1MTY2)
+. The tradeoff is that for each new custom gesture, the model will need labelled data for those gestures and I would have to retrain the model for detection. 
